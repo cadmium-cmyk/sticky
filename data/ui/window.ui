@@ -31,7 +31,9 @@
               </object>
             </child>
             <property name="title-widget">
-              <object class="GtkBox"></object>
+              <object class="GtkEntry" id="title_entry">
+                <property name="placeholder-text" translatable="yes">Note Title</property>
+              </object>
             </property>
             <style>
               <class name="header-bar" />
@@ -137,6 +139,10 @@
       <item>
         <attribute name="label" translatable="yes">All Notes</attribute>
         <attribute name="action">app.all-notes</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Delete Note</attribute>

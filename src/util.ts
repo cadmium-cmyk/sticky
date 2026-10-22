@@ -93,6 +93,7 @@ const get_settings = () => ({
   DEFAULT_WIDTH: settings.get_int("default-width"),
   DEFAULT_HEIGHT: settings.get_int("default-height"),
   CONFIRM_DELETE: settings.get_boolean("confirm-delete"),
+  NOTES_PATH: settings.get_string("notes-path"),
 });
 
 export let SETTINGS = get_settings();
@@ -207,29 +208,14 @@ export class Note extends GObject.Object {
     this.height = note.height;
     this.open = note.open ?? false;
 
-    this.bind_property_full(
-      "content",
-      this,
-      "title",
-      GObject.BindingFlags.SYNC_CREATE,
-      (_, content) => {
-        if (!content) return [true, ""];
-        let title = content.split("\n")[0].slice(0, 20);
-        if (title.length != content.length) title += "…";
-        return [true, title];
-      },
-      null
-    );
-
-
   }
 
-  static generate() {
+  static generate(title: string = "") {
     return new this({
       v: 1,
       uuid: GLib.uuid_string_random(),
       content: "",
-      title: "",
+      title: title,
       style: SETTINGS.DEFAULT_STYLE,
       tags: [],
       modified: new Date(),

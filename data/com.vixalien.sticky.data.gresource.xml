@@ -5,6 +5,7 @@
     <file>ui/notes.ui</file>
     <file>ui/theme-selector.ui</file>
     <file>ui/window.ui</file>
+    <file>ui/preferences.ui</file>
     <file alias="gtk/help-overlay.ui">ui/help-overlay.ui</file>
     <file>style.css</file>
     <file>style-dark.css</file>

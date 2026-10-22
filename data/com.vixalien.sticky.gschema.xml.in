@@ -11,6 +11,11 @@
 		<value nick="window" value="8" />
 	</enum>
 	<schema id="@app-id@" path="/com/vixalien/sticky/" gettext-domain="@gettext-package@">
+		<key name="notes-path" type="s">
+			<default>""</default>
+			<summary>Notes directory path</summary>
+			<description>Path where notes are stored</description>
+		</key>
 		<key name="default-height" type="i">
 			<default>500</default>
 			<summary>Note window default height</summary>

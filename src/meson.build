@@ -9,6 +9,7 @@ sources = [
   'styleselector.ts',
   'store.ts',
   'themeselector.ts',
+  'preferences.ts',
   'view.ts',
   'window.ts',
   'util.ts'

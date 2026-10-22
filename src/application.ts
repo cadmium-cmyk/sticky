@@ -35,11 +35,12 @@ import { Note, settings } from "./util.js";
 import {
   delete_note,
   load_notes,
-  NewNotesDir,
+  get_notes_dir,
   save_note,
   save_notes,
 } from "./store.js";
 import { Window } from "./window.js";
+import { PreferencesWindow } from "./preferences.js";
 
 export class Application extends Adw.Application {
   private window: StickyNotes | null = null;
@@ -73,8 +74,8 @@ export class Application extends Adw.Application {
     try {
       const notes = load_notes();
 
-      notes.forEach((note) => {
-        note.connect("notify::modified", (_, x) => {
+      notes.forEach((note: Note) => {
+        note.connect("notify::modified", () => {
           save_note(note);
         });
 
@@ -155,7 +156,7 @@ export class Application extends Adw.Application {
       return -1;
     });
 
-    console.log("Storing Notes at: " + NewNotesDir.get_path());
+    console.log("Storing Notes at: " + get_notes_dir().get_path());
   }
 
   save() {
@@ -250,6 +251,10 @@ export class Application extends Adw.Application {
     const show_about_action = new Gio.SimpleAction({ name: "about" });
     show_about_action.connect("activate", () => this.show_about());
     this.add_action(show_about_action);
+
+    const show_preferences_action = new Gio.SimpleAction({ name: "preferences" });
+    show_preferences_action.connect("activate", () => this.show_preferences());
+    this.add_action(show_preferences_action);
 
     const new_note = new Gio.SimpleAction({ name: "new-note" });
     new_note.connect("activate", () => this.new_note());
@@ -368,6 +373,13 @@ export class Application extends Adw.Application {
     return this.cycle(true);
   }
 
+  show_preferences() {
+    const preferencesWindow = new PreferencesWindow({
+      transient_for: this.active_window || undefined,
+    });
+    preferencesWindow.present();
+  }
+
   show_about() {
     const aboutParams: Partial<Adw.AboutWindow.ConstructorProps> = {
       transient_for: this.active_window,
@@ -478,7 +490,11 @@ export class Application extends Adw.Application {
   }
 
   new_note() {
-    const note = Note.generate();
+    const today = new Date().toISOString().split('T')[0];
+    const notes_count = this.notes_list.n_items;
+    const title = `${today}-${notes_count + 1}`;
+
+    const note = Note.generate(title);
 
     note.connect("notify::modified", () => {
       save_note(note);

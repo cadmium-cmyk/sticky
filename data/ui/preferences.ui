@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="PreferencesWindow" parent="AdwPreferencesWindow">
+    <property name="title" translatable="yes">Preferences</property>
+    <child>
+      <object class="AdwPreferencesPage">
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">General</property>
+            <child>
+              <object class="AdwActionRow" id="notes_path_row">
+                <property name="title" translatable="yes">Notes Directory</property>
+                <property name="subtitle" translatable="yes">Where notes are stored</property>
+                <child>
+                  <object class="GtkButton" id="notes_path_button">
+                    <property name="valign">center</property>
+                    <property name="label" translatable="yes">Select Directory</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
