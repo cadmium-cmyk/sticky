@@ -39,6 +39,7 @@ export class Window extends Adw.ApplicationWindow {
   declare _container: Gtk.Box;
   declare _text: Gtk.TextView;
   declare _menu_button: Gtk.MenuButton;
+  declare _title_entry: Gtk.Entry;
 
   declare _bold_button: Gtk.ToggleButton;
   declare _underline_button: Gtk.ToggleButton;
@@ -71,6 +72,7 @@ export class Window extends Adw.ApplicationWindow {
           "menu_button",
           "action_revealer",
           "action_button",
+          "title_entry",
         ],
         Signals: {
           deleted: {
@@ -98,18 +100,11 @@ export class Window extends Adw.ApplicationWindow {
     this.default_width = note.width;
     this.default_height = note.height;
 
-    this.note.bind_property_full(
+    this.note.bind_property(
       "title",
-      this,
-      "title",
-      GObject.BindingFlags.SYNC_CREATE,
-      (__, title) => {
-        if (!title) {
-          return [true, _("Sticky Note")];
-        }
-        return [true, title];
-      },
-      null,
+      this._title_entry,
+      "text",
+      GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
     );
 
     this.connect("close-request", () => {
