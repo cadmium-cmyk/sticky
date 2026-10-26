@@ -5,6 +5,8 @@ sources = [
   'card.ts',
   'errors.ts',
   'main.ts',
+  'markdown.ts',
+  'mirror.ts',
   'notes.ts',
   'styleselector.ts',
   'store.ts',
