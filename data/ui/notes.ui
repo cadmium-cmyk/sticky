@@ -123,6 +123,12 @@
     </section>
     <section>
       <item>
+        <attribute name="label" translatable="yes">Select Mirror Directory…</attribute>
+        <attribute name="action">app.select-mirror-directory</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
         <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
         <attribute name="action">win.show-help-overlay</attribute>
       </item>

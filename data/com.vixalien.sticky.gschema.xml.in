@@ -43,5 +43,16 @@
 			<summary>Show all notes</summary>
 			<description>Whether to show the all notes window or note</description>
 		</key>
+		<key name="mirror-enabled" type="b">
+			<default>false</default>
+			<summary>Enable mirroring</summary>
+			<description>Whether to mirror notes to markdown files in a selected directory</description>
+		</key>
+		<key name="mirror-directory" type="s">
+			<default>''</default>
+			<summary>Mirror directory</summary>
+
+			<description>The directory to mirror notes as markdown files</description>
+		</key>
 	</schema>
 </schemalist>

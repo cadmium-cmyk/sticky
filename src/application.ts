@@ -40,10 +40,12 @@ import {
   save_notes,
 } from "./store.js";
 import { Window } from "./window.js";
+import { MirrorManager } from "./mirror.js";
 
 export class Application extends Adw.Application {
   private window: StickyNotes | null = null;
   private note_windows: Window[] = [];
+  private mirror_manager: MirrorManager | null = null;
 
   static {
     GObject.registerClass(this);
@@ -87,6 +89,19 @@ export class Application extends Adw.Application {
       });
 
       this.sort_notes();
+
+      this.mirror_manager = new MirrorManager(
+        () => this.notes_array(),
+        (note) => {
+          this.attach_note_listeners(note);
+          this.notes_list.append(note);
+          save_note(note);
+        },
+      );
+
+      this.notes_array().forEach((note) => {
+        this.attach_note_listeners(note);
+      });
     } catch (error) {
       console.error(error as any);
     }
@@ -293,6 +308,10 @@ export class Application extends Adw.Application {
     save.connect("activate", () => this.save());
     this.add_action(save);
 
+    const select_mirror_dir = new Gio.SimpleAction({ name: "select-mirror-directory" });
+    select_mirror_dir.connect("activate", () => this.select_mirror_directory());
+    this.add_action(select_mirror_dir);
+
     this.add_action(settings.create_action("color-scheme"));
 
     this.set_accels_for_action("app.quit", ["<Primary>q"]);
@@ -440,6 +459,56 @@ export class Application extends Adw.Application {
     }
   }
 
+  attach_note_listeners(note: Note) {
+    const syncToMirror = () => {
+      if (this.mirror_manager) {
+        this.mirror_manager.save_note(note);
+      }
+    };
+
+    note.connect("notify::content", syncToMirror);
+    note.connect("notify::title", syncToMirror);
+    note.connect("notify::style", syncToMirror);
+    note.connect("notify::tag_list", syncToMirror);
+    note.connect("notify::open", syncToMirror);
+    note.connect("notify::modified", syncToMirror);
+  }
+
+  select_mirror_directory() {
+    const parent = this.get_active_window();
+    const dialog = Gtk.FileChooserNative.new(
+      _("Select Mirror Directory"),
+      parent,
+      Gtk.FileChooserAction.SELECT_FOLDER,
+      _("Select"),
+      _("Cancel"),
+    );
+
+    const currentDir = settings.get_string("mirror-directory");
+    if (currentDir) {
+      dialog.set_file(Gio.file_new_for_path(currentDir));
+    }
+
+    dialog.connect("response", (_dialog, response) => {
+      if (response === Gtk.ResponseType.ACCEPT) {
+        const file = dialog.get_file();
+        if (file) {
+          const path = file.get_path();
+          if (path) {
+            settings.set_string("mirror-directory", path);
+            settings.set_boolean("mirror-enabled", true);
+            if (this.mirror_manager) {
+              this.mirror_manager.setup();
+            }
+          }
+        }
+      }
+      dialog.destroy();
+    });
+
+    dialog.show();
+  }
+
   delete_note(uuid: string) {
     const found_id = this.find_note_id(uuid);
     const found_window = this.find_open_window(uuid);
@@ -448,6 +517,9 @@ export class Application extends Adw.Application {
     if (found_window) found_window.close();
 
     delete_note(uuid);
+    if (this.mirror_manager) {
+      this.mirror_manager.delete_note(uuid);
+    }
   }
 
   all_notes() {
@@ -489,7 +561,14 @@ export class Application extends Adw.Application {
       save_note(note);
     });
 
+    this.attach_note_listeners(note);
+
     this.notes_list.append(note);
+    save_note(note);
+
+    if (this.mirror_manager) {
+      this.mirror_manager.save_note(note);
+    }
 
     this.show_note(note.uuid);
   }

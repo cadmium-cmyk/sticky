@@ -5,6 +5,8 @@
     <file>card.js</file>
     <file>errors.js</file>
     <file>main.js</file>
+    <file>markdown.js</file>
+    <file>mirror.js</file>
     <file>notes.js</file>
     <file>styleselector.js</file>
     <file>store.js</file>
